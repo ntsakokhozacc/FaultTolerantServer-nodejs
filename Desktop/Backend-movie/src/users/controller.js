@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const pool = require('../../db');
 const queries = require('./queries')
 //const getUser = "SELECT * from users ORDER BY id ASC";
@@ -26,7 +27,7 @@ const getUserById=(req,res) =>{
 };
 
 
-const addUser = (req,res) => {
+const addUser = async (req,res) => {
     const {name,email,password,dob} = req.body;
 
     //check if email exists
@@ -38,8 +39,13 @@ const addUser = (req,res) => {
     });
 
     //add new user to db
+    const salt=await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    console.log(passwordHash);
+
     pool.query(queries.addUser, 
-        [name, email, password, dob],
+        [name, email, passwordHash, dob],
         (error,results)=>{
         if(error) throw error;
         res.status(201).send("User created successfully");
@@ -83,20 +89,26 @@ const updateUser = (req,res) =>{
 
 const userLogin =(req,res) =>{
     const {email} = req.body;
-    const {password} = req.body
+    const {password} = req.body;
+   
+    
+    
     pool.query(queries.checkEmailExists, [email], (error, results) => {
         if (!results.rows.length){
             res.status(404).send("email does not exist in the database");
         }
-        pool.query(queries.userLogin,[password,email],(error,results)=>{
-            const noUserfound = !results.rows.length;
-            if(noUserfound){
+
+        pool.query(queries.getPasswordByEmail,[email],(error,results)=>{
+            const queryPassword= bcrypt.compareSync(password, results.rows[0].password);
+            if(!queryPassword){
                 res.send("Invalid password");
             }
-            // if (error) throw error;
-            res.status(200).json(results.rows)
-            
-        })
+            res.status(200).json(results.rows);
+            console.log(queryPassword)
+            //console.log(results)
+        });
+        
+
         
     });
     
