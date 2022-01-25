@@ -38,18 +38,36 @@ const addUser = (req,res) => {
     });
 
     //add new user to db
-    pool.query(queries.addUser, [name, email, age, dob],(error,results)=>{
-        if(error){
-            throw error;
-        }
+    pool.query(queries.addUser, 
+        [name, email, age, dob],
+        (error,results)=>{
+        if(error) throw error;
         res.status(201).send("User created successfully");
-    })
-    
-    
+    });
 };
+
+const removeUser = (req, res) =>{
+    const id =parseInt(req.params.id);
+
+    pool.query(queries.getUserById,[id],(error, results)=>{
+        const noUserfound = !results.rows.length;
+        if(noUserfound){
+            res.send("User does not exist in the database.");
+        }
+
+        pool.query(queries.removeUser,[id],(error, results)=>{
+            if(error) throw error;
+            res.status(200).send("user removed successfully");
+    });
+});
+
+}
+
+
 
 module.exports ={
     getUsers,
     getUserById,
     addUser,
+    removeUser,
 };
