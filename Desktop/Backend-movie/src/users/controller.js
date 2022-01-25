@@ -11,14 +11,14 @@ const getUsers = (req, res) => {
             res.status(404).send(error);
             throw error;
         }
-        console.log("hello");
         res.status(200).json(results.rows)
     });
-    console.log("debuggging");
 };
 
 const getUserById=(req,res) =>{
     const id =parseInt(req.params.id);
+
+
     pool.query(queries.getUserById,[id],(error, results)=>{
         if(error) throw error;
         res.status(200).json(results.rows);
@@ -27,7 +27,7 @@ const getUserById=(req,res) =>{
 
 
 const addUser = (req,res) => {
-    const {name,email,age,dob} = req.body;
+    const {name,email,password,dob} = req.body;
 
     //check if email exists
     pool.query(queries.checkEmailExists, [email], (error, results) => {
@@ -39,7 +39,7 @@ const addUser = (req,res) => {
 
     //add new user to db
     pool.query(queries.addUser, 
-        [name, email, age, dob],
+        [name, email, password, dob],
         (error,results)=>{
         if(error) throw error;
         res.status(201).send("User created successfully");
@@ -81,6 +81,27 @@ const updateUser = (req,res) =>{
     
 }
 
+const userLogin =(req,res) =>{
+    const {email} = req.body;
+    const {password} = req.body
+    pool.query(queries.checkEmailExists, [email], (error, results) => {
+        if (!results.rows.length){
+            res.status(404).send("email does not exist in the database");
+        }
+        pool.query(queries.userLogin,[password,email],(error,results)=>{
+            const noUserfound = !results.rows.length;
+            if(noUserfound){
+                res.send("Invalid password");
+            }
+            // if (error) throw error;
+            res.status(200).json(results.rows)
+            
+        })
+        
+    });
+    
+}
+
 
 module.exports ={
     getUsers,
@@ -88,4 +109,5 @@ module.exports ={
     addUser,
     removeUser,
     updateUser,
+    userLogin,
 };
