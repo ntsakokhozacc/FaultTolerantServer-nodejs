@@ -1,10 +1,11 @@
 
-const getUsers = "SELECT * from users ORDER BY id ASC";
-const getUserById = "select * from users where id =$1"
-const checkEmailExists = "select * from users where email= $1"
-
+const getUsers = "SELECT * FROM users ORDER BY id ASC";
+const getUserById = "SELECT * FROM users WHERE id =$1"
+const checkEmailExists = "SELECT * FROM users WHERE email= $1"
+const addUser = "INSERT INTO users (name,email,age,dob) VALUES ($1,$2,$3,$4,)";
 module.exports = {
     getUsers,
     getUserById,
-    checkEmailExists
+    checkEmailExists,
+    addUser,
 };
