@@ -63,6 +63,23 @@ const removeUser = (req, res) =>{
 
 }
 
+const updateUser = (req,res) =>{
+    const id = parseInt(req.params.id);
+    const {name } = req.body;
+
+    pool.query(queries.getUserById,[id],(error, results)=>{
+        const noUserfound = !results.rows.length;
+        if(noUserfound){
+            res.send("User does not exist in the database.");
+        }
+
+        pool.query(queries.updateUser,[name,id],(error,results) =>{
+            if (error) throw error;
+            res.status(200).send("User updated successfully")
+        })
+    });
+    
+}
 
 
 module.exports ={
@@ -70,4 +87,5 @@ module.exports ={
     getUserById,
     addUser,
     removeUser,
+    updateUser,
 };
