@@ -1,0 +1,22 @@
+{
+  "name": "circuit-breakers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "test-server": "npm run build && node build/index.js",
+    "test-breaker": "npm run build && node build/test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "express": "^4.17.3",
+    "ts-node": "^10.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}
